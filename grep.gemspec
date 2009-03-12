@@ -3,7 +3,7 @@
 module_name = "grep"
 
 Gem::Specification.new do |s|
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.author = "Jason King"
   s.summary = %q{grep - grep library done the Ruby way by extending Dir and File}
 
