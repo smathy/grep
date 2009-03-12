@@ -7,9 +7,13 @@ Gem::Specification.new do |s|
   s.author = "Jason King"
   s.summary = %q{grep - grep library done the Ruby way by extending Dir and File}
 
-	s.files = %w{README.markdown lib/**/*.rb}
+	s.files = %w{README.markdown lib/grep.rb}
 
-	s.test_files       = 'test/**/*.rb'
+	s.test_files = %w{
+    test/data/first.txt
+    test/data/third/first.txt
+    test/grep.rb
+  }
 
   s.name = module_name
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
