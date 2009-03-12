@@ -1,8 +1,8 @@
-Inline Attachment
-=================
+grep
+====
 
-This package adds full support for embedding inline images into your HTML emails
-through ActionMailer.
+Yes, there are already a couple of grep gems around - but they didn't do things
+the way I wanted, and weren't easy to fork.  So here's mine.
 
 Installation
 ------------
@@ -10,68 +10,31 @@ Installation
 To perform a system wide installation:
 
 	gem source -a http://gems.github.com
-	gem install JasonKing-inline_attachment
+	gem install JasonKing-grep
 
-To use inline_attachment in your project, add the following line to your project's
-config/environment.rb:
+Just require it, it just reopens Dir and File and adds the grep instance method
+to each of them.  You pass it a regular expression and it returns an array of
+hashes, very simple:
 
-	config.gem 'inline_attachment'
+	:match => Contains the MatchData object (so you can add parens and capture parts)
+	:file => Contains the File#path where the pattern matched (mainly useful for the Dir)
+	:lineno => Contains the line number where the pattern matched
+	:line => Contains the full line from the file where the pattern matched
 
+That's it, I think that's the best grep you can have.  Call it on a Dir object
+and it will drill down through the directory, matching as it goes.  Call it on a
+File object and it will just match in that file.
 
 Usage
 -----
 
-I've rewritten most of Edmond's great work in this version.  I now override
-path_to_image instead of `image_tag` because a big reason for all the Rails2
-breakages was because `image_tag` was basically reproduced in previous versions,
-so broke when that method changed.
-
-Now we override the very simple path_to_image, and most importantly we really
-just add our own stuff for ActionMailer templates, and resort to the existing
-code for everything else.
-
-I've also integrated in with the new implicit multipart stuff.  So now, there is
-so little code required!
-
-#### notifier.rb
-	class Notifier < ActionMailer::Base
-	  def signup
-	    recipients %q{"Testing IA" <testing@handle.it>}
-		  from       %q{"Mr Tester" <tester@handle.it>}
-		  subject "Here's a funky test"
-	  end
-	end
-	
-Oh yeah baby!  Read it and weep!  So how's this work?  Well, you'll need
-your templates named properly - see the _Multipart email_ section of the
-ActionMailer::Base docs.
-	
-#### signup.text.plain.erb
-	Your username is: <%= @username %>
-	
-#### signup.text.html.erb
-	<html><head><title>Signup Notification</title></head><body>
-	  <%= image_tag "logo.png" %>
-		<p>Your username is: <%=h @username %>
-	</body></html>
-
-
-That's it!  InlineAttachment will look for
-`#{RAILS_ROOT}/public/images/logo.png` and will do the right thing and embed it
-inline into the HTML version of the email.  ActionMailer will do the right thing
-and offer the recipient both the `text/plain` and `text/html` parts as alternatives.
-
-
-Note, that you should still be able to use this in the 0.3.0 way if you have
-code that uses that.  But there were a lot of alternatives, and the examples in
-here didn't show a crucial step of shuffling the parts around to be sure that
-the image parts came after the html.
-
-You can also do the old _manual_ method if you want.
+	require 'grep'
+	f = File.open('foo')
+	m = f.grep(/^\s*Include\s+(\S+)/)
+	m.first[:match][1]	 # => captured parens expression
 
 
 Contributors
 ------------
  
 * Jason King (JasonKing)
-* Matt Griffin (betamatt)
